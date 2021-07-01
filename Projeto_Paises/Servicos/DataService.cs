@@ -60,7 +60,8 @@ namespace Projeto_Paises.Servicos
             {
                 foreach (var pais in Paises)
                 {
-                    string sql = string.Format("insert into Paises (Name, Capital, Region, Subregion, Population, Gini, Flag) " +
+                    string sql = string.Format("insert into Paises " +
+                        "(Name, Capital, Region, Subregion, Population, Gini, Flag) " +
                         "values ('{0}', '{1}', '{2}', '{3}', {4}, '{5}', '{6}')", 
                         pais.Name.Replace("'","''"), pais.Capital.Replace("'", "''"), pais.Region.Replace("'", "''"), pais.Subregion.Replace("'", "''"), pais.Population, pais.Gini, pais.Flag);
 
@@ -73,7 +74,7 @@ namespace Projeto_Paises.Servicos
             }
             catch (Exception e)
             {
-                _dialogService.ShowMessage("tao", e.Message);
+                _dialogService.ShowMessage("Erro", e.Message);
             }
         }
 

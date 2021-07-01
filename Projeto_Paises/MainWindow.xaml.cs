@@ -1,19 +1,18 @@
 ﻿using Projeto_Paises.Modelos;
 using Projeto_Paises.Servicos;
+using Svg;
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
+using System.Net;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace Projeto_Paises
 {
@@ -30,26 +29,32 @@ namespace Projeto_Paises
 
         private List<Pais> _paises;
 
-        private DialogService _dialogService;
+        private Pais _pais;
 
         private DataService _dataService;
 
+        private DialogService _dialogService;
+
         #endregion
+
+        #region Construtor
 
         public MainWindow()
         {
             InitializeComponent();
             _networkService = new NetworkService();
             _apiService = new ApiService();
-            _dialogService = new DialogService();
             _dataService = new DataService();
+            _dialogService = new DialogService();
             LoadPaises();
         }
+
+        #endregion
 
         #region Eventos
 
         /// <summary>
-        /// Mostra informações sobre o autor do projeto
+        /// Evento que mostra informações sobre o autor do projeto
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -60,7 +65,97 @@ namespace Projeto_Paises
                 "\nFormador: Rafael Santos" +
                 "\nData: 27/06/2021" +
                 "\nVersão: 1.0.0"
-                ,"Sobre", MessageBoxButton.OK, MessageBoxImage.Information);
+                , "Sobre", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        /// <summary>
+        /// Evento que carrega as informações do pais escolhido
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void lb_paises_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            lb_informacoes.Items.Clear();
+
+            _pais = (Pais)lb_paises.SelectedItem;
+
+            // Apresentar as informações do pais
+
+            // Nome
+            lb_informacoes.Items.Add("Nome: " + _pais.Name);
+
+            // Capital
+            if (_pais.Capital != "")
+            {
+                lb_informacoes.Items.Add("Capital: " + _pais.Capital);
+            }
+            else
+            {
+                lb_informacoes.Items.Add("Capital: Informação indisponivel");
+            }
+
+            // Região
+            if (_pais.Region != "")
+            {
+                lb_informacoes.Items.Add("Região: " + _pais.Region);
+
+            }
+            else
+            {
+                lb_informacoes.Items.Add("Região: Informação indisponivel");
+
+            }
+
+            // Subregião
+            if (_pais.Subregion != "")
+            {
+                lb_informacoes.Items.Add("Subregião: " + _pais.Subregion);
+
+            }
+            else
+            {
+                lb_informacoes.Items.Add("Subregião: Informação indisponivel");
+
+            }
+
+            // População
+            if (_pais.Population.ToString() != "")
+            {
+                lb_informacoes.Items.Add("População: " + _pais.Population.ToString());
+            }
+            else
+            {
+                lb_informacoes.Items.Add("População: Informação indisponivel");
+            }
+
+            // Gini
+            if (_pais.Gini != null)
+            {
+                lb_informacoes.Items.Add("Gini: " + _pais.Gini);
+            }
+            else
+            {
+                lb_informacoes.Items.Add("Gini: Informação indisponivel");
+            }
+
+            string path = Assembly.GetExecutingAssembly().Location.Remove(Assembly.GetExecutingAssembly().Location.Length - 18);
+            var imgPNG = $"Bandeiras/{_pais.Name}.png";
+
+            // Bandeira
+            if (File.Exists(imgPNG))
+            {
+                var caminho = path + imgPNG;
+
+                var uriSource = new Uri(caminho);
+
+                img_bandeira.Source = new BitmapImage(uriSource);
+            }
+            else
+            {
+                var caminho = Assembly.GetExecutingAssembly().Location.Remove(Assembly.GetExecutingAssembly().Location.Length - 43) + "Resources/bandeira.png";
+                var uriSource = new Uri(caminho);
+                img_bandeira.Source = new BitmapImage(uriSource);
+            }
         }
 
         #endregion
@@ -86,6 +181,7 @@ namespace Projeto_Paises
             else // Se tiver conexão
             {
                 await LoadApiPaises(); // Conecta-se à Api que vai estabelecer ligação à base de dados online
+                DownloadBandeiras(_paises);
                 load = true;
             }
 
@@ -93,7 +189,7 @@ namespace Projeto_Paises
             {
                 lbl_estado.Content = "Estado: \nUtilizar ligação à internet no primeiro uso!";
                 lbl_origem.Content = "Origem dos dados: \nSem dados";
-                return; // Termina a execução do método LoadRates()
+                return; // Termina a execução do método LoadPaises()
             }
 
             foreach (Pais pais in _paises)
@@ -116,11 +212,18 @@ namespace Projeto_Paises
             pbar_load.Value = 100; // Progressbar fica a 100%
         }
 
+        /// <summary>
+        /// Vai buscar as informações à base de dados local
+        /// </summary>
         private void LoadLocalPaises()
         {
             _paises = _dataService.GetData();
         }
 
+        /// <summary>
+        /// Vai buscar as informações à API
+        /// </summary>
+        /// <returns></returns>
         private async Task LoadApiPaises()
         {
             pbar_load.Value = 0;
@@ -136,11 +239,56 @@ namespace Projeto_Paises
             _dataService.SaveData(_paises);
         }
 
-        #endregion
-
-        private void lb_paises_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        /// <summary>
+        /// Faz download da imagem da bandeira do pais escolhido caso tenha
+        /// </summary>
+        /// <param name="pais"></param>
+        private void DownloadBandeiras(List<Pais> paises)
         {
-            
+            foreach (Pais pais in paises)
+            {
+                string svgFileName = pais.Flag;
+
+                using (WebClient webClient = new WebClient())
+                {
+                    string path = Assembly.GetExecutingAssembly().Location.Remove(Assembly.GetExecutingAssembly().Location.Length - 18);
+                    var imgSVG = $"Bandeiras/{pais.Name}.svg";
+                    var imgPNG = $"Bandeiras/{pais.Name}.png";
+
+                    if (!Directory.Exists(path + "Bandeiras"))
+                    {
+                        Directory.CreateDirectory(path + "Bandeiras");
+                    }
+
+                    try
+                    {
+                        // Se a bandeira ainda não tiver sido transferida
+                        if (!File.Exists(imgSVG))
+                        {
+                            // Transfere em formato svg
+                            webClient.DownloadFile(svgFileName, imgSVG);
+
+                            // Faz a conversao -> bytes -> png
+                            var byteArray = Encoding.ASCII.GetBytes(imgSVG);
+
+                            using (var stream = new MemoryStream(byteArray))
+                            {
+                                var svgDocument = SvgDocument.Open(imgSVG);
+
+                                var bitmap = svgDocument.Draw();
+
+                                bitmap.Save(imgPNG, ImageFormat.Png);
+                            }
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        
+                    }
+                }
+            }
         }
+
+        #endregion
     }
 }
