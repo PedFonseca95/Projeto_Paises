@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace Projeto_Paises.Modelos
 {
-    public class Currency
+    public class Fuel
     {
-        public string Code { get; set; }
-        public string Name { get; set; }
-        public string Symbol { get; set; }
+        public string NomePais { get; set; }
+
+        public string PrecoCombustivel { get; set; }
     }
 }

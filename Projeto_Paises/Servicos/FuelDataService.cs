@@ -6,10 +6,11 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WebAPI;
 
 namespace Projeto_Paises.Servicos
 {
-    public class DataService
+    public class FuelDataService
     {
         // Base de dados local
 
@@ -19,7 +20,7 @@ namespace Projeto_Paises.Servicos
 
         private DialogService _dialogService;
 
-        public DataService()
+        public FuelDataService()
         {
             _dialogService = new DialogService();
 
@@ -28,21 +29,16 @@ namespace Projeto_Paises.Servicos
                 Directory.CreateDirectory("Data");
             }
 
-            var path = @"Data\Paises.sqlite";
+            var path = @"Data\FuelPrices.sqlite";
 
             try
             {
                 _connection = new SQLiteConnection("Data Source =" + path);
                 _connection.Open();
 
-                string sqlcommand = "create table if not exists Paises " +
-                    "(Name varchar(100), " +
-                    "Capital varchar(100), " +
-                    "Region varchar(100), " +
-                    "Subregion varchar(100), " +
-                    "Population int, " +
-                    "Gini varchar(100), " +
-                    "Flag varchar(100))";
+                string sqlcommand = "create table if not exists FuelPrices " +
+                    "(CountryName varchar(100)," +
+                    "FuelPrice varchar(100))";
 
                 _command = new SQLiteCommand(sqlcommand, _connection);
 
@@ -54,16 +50,14 @@ namespace Projeto_Paises.Servicos
             }
         }
 
-        public void SaveData(List<Pais> Paises)
+        public void SaveData(List<Fuel> Combustiveis)
         {
             try
             {
-                foreach (var pais in Paises)
+                foreach (var combustivel in Combustiveis)
                 {
-                    string sql = string.Format("insert into Paises " +
-                        "(Name, Capital, Region, Subregion, Population, Gini, Flag) " +
-                        "values ('{0}', '{1}', '{2}', '{3}', {4}, '{5}', '{6}')", 
-                        pais.Name.Replace("'","''"), pais.Capital.Replace("'", "''"), pais.Region.Replace("'", "''"), pais.Subregion.Replace("'", "''"), pais.Population, pais.Gini, pais.Flag);
+                    string sql = string.Format("insert into FuelPrices " +
+                        "(CountryName, FuelPrice) values ('{0}', '{1}')", combustivel.NomePais.Replace("'","''"), combustivel.PrecoCombustivel);
 
                     _command = new SQLiteCommand(sql, _connection);
 
@@ -78,13 +72,13 @@ namespace Projeto_Paises.Servicos
             }
         }
 
-        public List<Pais> GetData()
+        public List<FuelPrice> GetData()
         {
-            List<Pais> paises = new List<Pais>();
+            List<FuelPrice> paises = new List<FuelPrice>();
 
             try
             {
-                string sql = "select * from Paises";
+                string sql = "select * from FuelPrices";
 
                 _command = new SQLiteCommand(sql, _connection);
 
@@ -92,15 +86,10 @@ namespace Projeto_Paises.Servicos
 
                 while (reader.Read())
                 {
-                    paises.Add(new Pais
+                    paises.Add(new FuelPrice
                     {
-                        Name = (string)reader["Name"],
-                        Capital = (string)reader["Capital"],
-                        Region = (string)reader["Region"],
-                        Subregion = (string)reader["Subregion"],
-                        Population = (int)reader["Population"],
-                        Gini = (string)reader["Gini"],
-                        Flag = (string)reader["Flag"]
+                        nomePais = (string)reader["CountryName"],
+                        precoCombustivel = (string)reader["FuelPrice"]
                     });
                 }
 
@@ -119,7 +108,7 @@ namespace Projeto_Paises.Servicos
         {
             try
             {
-                string sql = "delete from Paises";
+                string sql = "delete from FuelPrices";
 
                 _command = new SQLiteCommand(sql, _connection);
 
@@ -129,11 +118,6 @@ namespace Projeto_Paises.Servicos
             {
                 _dialogService.ShowMessage("Erro", e.Message);
             }
-        }
-
-        internal void SaveData(List<Fuel> fuels)
-        {
-            throw new NotImplementedException();
         }
     }
 }

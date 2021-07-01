@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Projeto_Paises"
         mc:Ignorable="d"
-        Title="Projeto WPF - Países API" Height="388" Width="791" ResizeMode="CanMinimize" Icon="/Resources/icon.ico">
+        Title="Projeto WPF - Países API" Height="411" Width="913" ResizeMode="CanMinimize" Icon="/Resources/icon.ico">
     <Grid Margin="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="55*"/>
@@ -17,7 +17,7 @@
             <ColumnDefinition Width="125*"/>
             <ColumnDefinition Width="106*"/>
         </Grid.ColumnDefinitions>
-        <Label Content="Lista de Países" HorizontalAlignment="Center" Height="52" VerticalAlignment="Top" Width="187" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Foreground="White" BorderBrush="#FF0B60F9" BorderThickness="2,2,2,2">
+        <Label Content="Lista de Países" HorizontalAlignment="Center" Height="52" VerticalAlignment="Center" Width="222" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Foreground="White" BorderBrush="#FF0B60F9" BorderThickness="2,2,2,2">
             <Label.Background>
                 <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                     <GradientStop Color="White" Offset="0"/>
@@ -25,9 +25,9 @@
                 </LinearGradientBrush>
             </Label.Background>
         </Label>
-        <ListBox x:Name="lb_paises" Margin="16,10,16,15" Grid.RowSpan="2" Grid.Row="1" BorderThickness="2,2,2,2" BorderBrush="#FF0B60F9" SelectionChanged="lb_paises_SelectionChanged"/>
-        <Image x:Name="img_bandeira" Grid.Column="2" HorizontalAlignment="Left" Height="89" Margin="17,10,0,0" VerticalAlignment="Top" Width="207" Grid.Row="1" Stretch="Fill"/>
-        <Label Content="Informações do País" HorizontalAlignment="Center" Height="52" VerticalAlignment="Top" Width="247" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Foreground="White" Grid.Column="1" BorderThickness="2,2,2,2" BorderBrush="#FF0B60F9">
+        <ListBox x:Name="lb_paises" Margin="16,10,16,0" Grid.RowSpan="2" Grid.Row="1" BorderThickness="2,2,2,2" BorderBrush="#FF0B60F9" SelectionChanged="lb_paises_SelectionChanged"/>
+        <Image x:Name="img_bandeira" Grid.Column="2" HorizontalAlignment="Left" Height="93" Margin="16,14,0,0" VerticalAlignment="Top" Width="248" Grid.Row="1" Stretch="Fill"/>
+        <Label Content="Informações do País" HorizontalAlignment="Center" Height="52" VerticalAlignment="Center" Width="314" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Foreground="White" Grid.Column="1" BorderThickness="2,2,2,2" BorderBrush="#FF0B60F9">
             <Label.Background>
                 <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                     <GradientStop Color="White" Offset="0"/>
@@ -35,7 +35,7 @@
                 </LinearGradientBrush>
             </Label.Background>
         </Label>
-        <Label Content="Bandeira do País" HorizontalAlignment="Center" Height="52" VerticalAlignment="Top" Width="209" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Foreground="White" Grid.Column="2" BorderThickness="2,2,2,2" BorderBrush="#FF0B60F9">
+        <Label Content="Bandeira do País" HorizontalAlignment="Center" Height="52" VerticalAlignment="Center" Width="252" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Foreground="White" Grid.Column="2" BorderThickness="2,2,2,2" BorderBrush="#FF0B60F9">
             <Label.Background>
                 <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                     <GradientStop Color="White"/>
@@ -43,11 +43,11 @@
                 </LinearGradientBrush>
             </Label.Background>
         </Label>
-        <ProgressBar x:Name="pbar_load" Grid.Column="2" HorizontalAlignment="Left" Height="20" Margin="76,14,0,0" Grid.Row="2" VerticalAlignment="Top" Width="150" BorderThickness="2,2,2,2" BorderBrush="#FF0B60F9"/>
-        <Label x:Name="lbl_estado" Content="Estado: #" Grid.Column="2" HorizontalAlignment="Center" Margin="0,47,0,0" Grid.Row="2" VerticalAlignment="Top" Width="224" FontSize="10" Height="41"/>
-        <Label x:Name="lbl_origem" Content="Origem: #" Grid.Column="2" HorizontalAlignment="Center" Grid.Row="2" VerticalAlignment="Top" Width="224" FontSize="10" Margin="0,90,0,0" Height="39"/>
-        <Button x:Name="btn_sobre" Content="Sobre" Grid.Column="2" HorizontalAlignment="Left" Height="22" Margin="176,129,0,0" Grid.Row="2" VerticalAlignment="Top" Width="50" BorderThickness="2,2,2,2" BorderBrush="#FF0B60F9" Click="btn_sobre_Click"/>
-        <ListBox x:Name="lb_informacoes" Margin="20,10,21,15" Grid.RowSpan="2" Grid.Row="1" BorderThickness="2,2,2,2" BorderBrush="#FF0B60F9" Grid.Column="1"/>
+        <ProgressBar x:Name="pbar_load" Grid.Column="2" HorizontalAlignment="Left" Height="20" Margin="69,14,0,0" Grid.Row="2" VerticalAlignment="Top" Width="199" BorderThickness="2,2,2,2" BorderBrush="#FF0B60F9"/>
+        <Label x:Name="lbl_estado" Content="Estado: #" Grid.Column="2" HorizontalAlignment="Center" Margin="0,47,0,0" Grid.Row="2" VerticalAlignment="Top" Width="264" FontSize="10" Height="43"/>
+        <Label x:Name="lbl_origem" Content="Origem: #" Grid.Column="2" HorizontalAlignment="Center" Grid.Row="2" VerticalAlignment="Top" Width="264" FontSize="10" Margin="0,90,0,0" Height="50"/>
+        <Button x:Name="btn_sobre" Content="Sobre" Grid.Column="2" HorizontalAlignment="Left" Height="24" Margin="226,126,0,0" Grid.Row="2" VerticalAlignment="Top" Width="42" BorderThickness="2,2,2,2" BorderBrush="#FF0B60F9" Click="btn_sobre_Click"/>
+        <ListBox x:Name="lb_informacoes" Margin="10,10,10,0" Grid.RowSpan="2" Grid.Row="1" BorderThickness="2,2,2,2" BorderBrush="#FF0B60F9" Grid.Column="1"/>
         <Label Content="Progresso:" Grid.Column="2" HorizontalAlignment="Left" Margin="8,14,0,0" Grid.Row="2" VerticalAlignment="Top" Width="61" FontSize="10" Height="28"/>
 
     </Grid>

@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?><Database Name="ProjetoPaises" Class="DataClassesDataContext" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">
+  <Connection Mode="WebSettings" ConnectionString="Data Source=ProjetoPaises.mssql.somee.com;Initial Catalog=ProjetoPaises;User ID=pfonseca95_SQLLogin_1;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False" SettingsObjectName="System.Configuration.ConfigurationManager.ConnectionStrings" SettingsPropertyName="ProjetoPaisesConnectionString" Provider="System.Data.SqlClient" />
+  <Table Name="dbo.FuelPrice" Member="FuelPrices">
+    <Type Name="FuelPrice">
+      <Column Name="nomePais" Type="System.String" DbType="VarChar(100) NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Name="precoCombustivel" Type="System.String" DbType="VarChar(100)" CanBeNull="true" />
+    </Type>
+  </Table>
+</Database>

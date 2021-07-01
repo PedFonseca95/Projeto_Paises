@@ -3,7 +3,6 @@ using Projeto_Paises.Servicos;
 using Svg;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Net;
@@ -35,6 +34,12 @@ namespace Projeto_Paises
 
         private DialogService _dialogService;
 
+        private FuelApiService _fuelApiService;
+
+        private FuelDataService _fuelDataService;
+
+        private List<Fuel> _fuels;
+
         #endregion
 
         #region Construtor
@@ -46,6 +51,8 @@ namespace Projeto_Paises
             _apiService = new ApiService();
             _dataService = new DataService();
             _dialogService = new DialogService();
+            _fuelApiService = new FuelApiService();
+            _fuelDataService = new FuelDataService();
             LoadPaises();
         }
 
@@ -80,6 +87,7 @@ namespace Projeto_Paises
             _pais = (Pais)lb_paises.SelectedItem;
 
             // Apresentar as informações do pais
+            lb_informacoes.Items.Add("Informações Principais");
 
             // Nome
             lb_informacoes.Items.Add("Nome: " + _pais.Name);
@@ -156,6 +164,26 @@ namespace Projeto_Paises
                 var uriSource = new Uri(caminho);
                 img_bandeira.Source = new BitmapImage(uriSource);
             }
+
+            // API - Preço dos combustiveis por pais
+            lb_informacoes.Items.Add("");
+            lb_informacoes.Items.Add("Informações da API criada - Preço dos combustiveis");
+
+            foreach (Fuel fuel in _fuels)
+            {
+                if (fuel.NomePais == _pais.Name)
+                {
+                    if (fuel.PrecoCombustivel == null)
+                    {
+                        lb_informacoes.Items.Add("Preço do combustivel: Informação indisponivel");
+                    }
+                    else
+                    {
+                        lb_informacoes.Items.Add("Preço do combustivel: " + fuel.PrecoCombustivel + " €/litro");
+                    }
+                }
+            }
+
         }
 
         #endregion
@@ -181,6 +209,7 @@ namespace Projeto_Paises
             else // Se tiver conexão
             {
                 await LoadApiPaises(); // Conecta-se à Api que vai estabelecer ligação à base de dados online
+                await LoadApiFuelPrices();
                 DownloadBandeiras(_paises);
                 load = true;
             }
@@ -201,7 +230,7 @@ namespace Projeto_Paises
             if (load) // Se a Api carregar
             {
                 lbl_estado.Content = string.Format("Estado: \nDados carregados às {0:F}", DateTime.Now.ToLongTimeString());
-                lbl_origem.Content = "Origem:\nhttp://restcountries.eu/rest/v2/all";
+                lbl_origem.Content = "Origem:\nhttp://restcountries.eu/rest/v2/all\nhttp://fuelprices.somee.com/api/FuelPrice";
             }
             else // Se for carregado através da base de dados local
             {
@@ -237,6 +266,19 @@ namespace Projeto_Paises
             _dataService.DeleteData();
 
             _dataService.SaveData(_paises);
+        }
+
+        private async Task LoadApiFuelPrices()
+        {
+            // Definir endereço base/principal e controlador da API
+            Response response = await _fuelApiService.GetFuels("http://fuelprices.somee.com", "/api/FuelPrice");
+            // async e await serve para que a aplicação continue a correr enquanto são carregadas as taxas - Tarefa asincrona  
+
+            _fuels = (List<Fuel>)response.Result;
+
+            _fuelDataService.DeleteData();
+
+            _fuelDataService.SaveData(_fuels);
         }
 
         /// <summary>
@@ -283,7 +325,7 @@ namespace Projeto_Paises
                     }
                     catch (Exception)
                     {
-                        
+
                     }
                 }
             }

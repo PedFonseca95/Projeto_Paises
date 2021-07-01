@@ -8,7 +8,6 @@ namespace Projeto_Paises.Modelos
 {
     public class Pais
     {
-        /* ----------- Informação Principal ----------- */
         public string Name { get; set; }
         
         public string Capital { get; set; }
@@ -22,20 +21,5 @@ namespace Projeto_Paises.Modelos
         public string Gini { get; set; }
 
         public string Flag { get; set; }
-
-        /* ----------- Informação Adicional ----------- */
-
-        
-        public string Area { get; set; }
-
-        public List<string> Timezones { get; set; }
-
-        public List<Currency> Currencies { get; set; }
-
-        public List<Language> Languages { get; set; }
-
-        public Translations Translations { get; set; }
-
-        public List<RegionalBloc> RegionalBlocs { get; set; }
     }
 }
