@@ -22,7 +22,7 @@ namespace WebAPI
 	using System;
 	
 	
-	[global::System.Data.Linq.Mapping.DatabaseAttribute(Name="ProjetoPaises")]
+	[global::System.Data.Linq.Mapping.DatabaseAttribute(Name="FonsecaDB")]
 	public partial class DataClassesDataContext : System.Data.Linq.DataContext
 	{
 		
@@ -30,13 +30,13 @@ namespace WebAPI
 		
     #region Extensibility Method Definitions
     partial void OnCreated();
-    partial void InsertFuelPrice(FuelPrice instance);
-    partial void UpdateFuelPrice(FuelPrice instance);
-    partial void DeleteFuelPrice(FuelPrice instance);
+    partial void InsertPrecoCombustivei(PrecoCombustivei instance);
+    partial void UpdatePrecoCombustivei(PrecoCombustivei instance);
+    partial void DeletePrecoCombustivei(PrecoCombustivei instance);
     #endregion
 		
 		public DataClassesDataContext() : 
-				base(global::System.Configuration.ConfigurationManager.ConnectionStrings["ProjetoPaisesConnectionString"].ConnectionString, mappingSource)
+				base(global::System.Configuration.ConfigurationManager.ConnectionStrings["FonsecaDBConnectionString"].ConnectionString, mappingSource)
 		{
 			OnCreated();
 		}
@@ -65,24 +65,26 @@ namespace WebAPI
 			OnCreated();
 		}
 		
-		public System.Data.Linq.Table<FuelPrice> FuelPrices
+		public System.Data.Linq.Table<PrecoCombustivei> PrecoCombustiveis
 		{
 			get
 			{
-				return this.GetTable<FuelPrice>();
+				return this.GetTable<PrecoCombustivei>();
 			}
 		}
 	}
 	
-	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.FuelPrice")]
-	public partial class FuelPrice : INotifyPropertyChanging, INotifyPropertyChanged
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.PrecoCombustiveis")]
+	public partial class PrecoCombustivei : INotifyPropertyChanging, INotifyPropertyChanged
 	{
 		
 		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
 		
 		private string _nomePais;
 		
-		private string _precoCombustivel;
+		private string _precoGasolina;
+		
+		private string _precoGasoleo;
 		
     #region Extensibility Method Definitions
     partial void OnLoaded();
@@ -90,11 +92,13 @@ namespace WebAPI
     partial void OnCreated();
     partial void OnnomePaisChanging(string value);
     partial void OnnomePaisChanged();
-    partial void OnprecoCombustivelChanging(string value);
-    partial void OnprecoCombustivelChanged();
+    partial void OnprecoGasolinaChanging(string value);
+    partial void OnprecoGasolinaChanged();
+    partial void OnprecoGasoleoChanging(string value);
+    partial void OnprecoGasoleoChanged();
     #endregion
 		
-		public FuelPrice()
+		public PrecoCombustivei()
 		{
 			OnCreated();
 		}
@@ -119,22 +123,42 @@ namespace WebAPI
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_precoCombustivel", DbType="VarChar(100)")]
-		public string precoCombustivel
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_precoGasolina", DbType="VarChar(10)")]
+		public string precoGasolina
 		{
 			get
 			{
-				return this._precoCombustivel;
+				return this._precoGasolina;
 			}
 			set
 			{
-				if ((this._precoCombustivel != value))
+				if ((this._precoGasolina != value))
 				{
-					this.OnprecoCombustivelChanging(value);
+					this.OnprecoGasolinaChanging(value);
 					this.SendPropertyChanging();
-					this._precoCombustivel = value;
-					this.SendPropertyChanged("precoCombustivel");
-					this.OnprecoCombustivelChanged();
+					this._precoGasolina = value;
+					this.SendPropertyChanged("precoGasolina");
+					this.OnprecoGasolinaChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_precoGasoleo", DbType="VarChar(10)")]
+		public string precoGasoleo
+		{
+			get
+			{
+				return this._precoGasoleo;
+			}
+			set
+			{
+				if ((this._precoGasoleo != value))
+				{
+					this.OnprecoGasoleoChanging(value);
+					this.SendPropertyChanging();
+					this._precoGasoleo = value;
+					this.SendPropertyChanged("precoGasoleo");
+					this.OnprecoGasoleoChanged();
 				}
 			}
 		}

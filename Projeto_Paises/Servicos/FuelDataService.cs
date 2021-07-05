@@ -29,16 +29,17 @@ namespace Projeto_Paises.Servicos
                 Directory.CreateDirectory("Data");
             }
 
-            var path = @"Data\FuelPrices.sqlite";
+            var path = @"Data\PrecoCombustiveis.sqlite";
 
             try
             {
                 _connection = new SQLiteConnection("Data Source =" + path);
                 _connection.Open();
 
-                string sqlcommand = "create table if not exists FuelPrices " +
-                    "(CountryName varchar(100)," +
-                    "FuelPrice varchar(100))";
+                string sqlcommand = "create table if not exists PrecoCombustiveis " +
+                    "(NomePais varchar(100)," +
+                    "PrecoGasolina varchar(10)," +
+                    "PrecoGasoleo varchar(10))";
 
                 _command = new SQLiteCommand(sqlcommand, _connection);
 
@@ -50,18 +51,23 @@ namespace Projeto_Paises.Servicos
             }
         }
 
-        public void SaveData(List<Fuel> Combustiveis)
+        public async Task SaveData(List<Fuel> Combustiveis, IProgress<int> progress)
         {
+            int counter = 250;
+
             try
             {
                 foreach (var combustivel in Combustiveis)
                 {
-                    string sql = string.Format("insert into FuelPrices " +
-                        "(CountryName, FuelPrice) values ('{0}', '{1}')", combustivel.NomePais.Replace("'","''"), combustivel.PrecoCombustivel);
+                    string sql = string.Format("insert into PrecoCombustiveis " +
+                        "(NomePais, PrecoGasolina, PrecoGasoleo) values ('{0}', '{1}', '{2}')", 
+                        combustivel.NomePais.Replace("'","''"), combustivel.PrecoGasolina, combustivel.PrecoGasoleo);
 
+                    counter++;
                     _command = new SQLiteCommand(sql, _connection);
 
-                    _command.ExecuteNonQuery();
+                    progress.Report(counter);
+                    await _command.ExecuteNonQueryAsync();
                 }
 
                 _connection.Close();
@@ -72,13 +78,13 @@ namespace Projeto_Paises.Servicos
             }
         }
 
-        public List<FuelPrice> GetData()
+        public List<Fuel> GetData()
         {
-            List<FuelPrice> paises = new List<FuelPrice>();
+            List<Fuel> combustiveis = new List<Fuel>();
 
             try
             {
-                string sql = "select * from FuelPrices";
+                string sql = "select * from PrecoCombustiveis";
 
                 _command = new SQLiteCommand(sql, _connection);
 
@@ -86,16 +92,17 @@ namespace Projeto_Paises.Servicos
 
                 while (reader.Read())
                 {
-                    paises.Add(new FuelPrice
+                    combustiveis.Add(new Fuel
                     {
-                        nomePais = (string)reader["CountryName"],
-                        precoCombustivel = (string)reader["FuelPrice"]
+                        NomePais = (string)reader["NomePais"],
+                        PrecoGasolina = (string)reader["PrecoGasolina"],
+                        PrecoGasoleo = (string)reader["PrecoGasoleo"]
                     });
                 }
 
                 _connection.Close();
 
-                return paises;
+                return combustiveis;
             }
             catch (Exception e)
             {
@@ -108,7 +115,7 @@ namespace Projeto_Paises.Servicos
         {
             try
             {
-                string sql = "delete from FuelPrices";
+                string sql = "delete from PrecoCombustiveis";
 
                 _command = new SQLiteCommand(sql, _connection);
 

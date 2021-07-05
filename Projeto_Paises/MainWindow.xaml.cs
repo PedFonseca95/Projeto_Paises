@@ -54,6 +54,8 @@ namespace Projeto_Paises
             _fuelApiService = new FuelApiService();
             _fuelDataService = new FuelDataService();
             LoadPaises();
+
+
         }
 
         #endregion
@@ -93,57 +95,54 @@ namespace Projeto_Paises
             lb_informacoes.Items.Add("Nome: " + _pais.Name);
 
             // Capital
-            if (_pais.Capital != "")
+            if (_pais.Capital == "" || _pais.Capital == null)
+            {
+
+                lb_informacoes.Items.Add("Capital: Informação indisponivel");
+            }
+            else
             {
                 lb_informacoes.Items.Add("Capital: " + _pais.Capital);
             }
-            else
-            {
-                lb_informacoes.Items.Add("Capital: Informação indisponivel");
-            }
 
             // Região
-            if (_pais.Region != "")
+            if (_pais.Region == "" || _pais.Region == null)
             {
-                lb_informacoes.Items.Add("Região: " + _pais.Region);
-
+                lb_informacoes.Items.Add("Região: Informação indisponivel");
             }
             else
             {
-                lb_informacoes.Items.Add("Região: Informação indisponivel");
-
+                lb_informacoes.Items.Add("Região: " + _pais.Region);
             }
 
             // Subregião
-            if (_pais.Subregion != "")
+            if (_pais.Subregion == "" || _pais.Subregion == null)
             {
-                lb_informacoes.Items.Add("Subregião: " + _pais.Subregion);
-
+                lb_informacoes.Items.Add("Subregião: Informação indisponivel");
             }
             else
             {
-                lb_informacoes.Items.Add("Subregião: Informação indisponivel");
-
+                lb_informacoes.Items.Add("Subregião: " + _pais.Subregion);
             }
 
             // População
-            if (_pais.Population.ToString() != "")
-            {
-                lb_informacoes.Items.Add("População: " + _pais.Population.ToString());
-            }
-            else
+            if (_pais.Population.ToString() == "" || _pais.Population.ToString() == null)
             {
                 lb_informacoes.Items.Add("População: Informação indisponivel");
             }
+            else
+            {
+                lb_informacoes.Items.Add("População: " + _pais.Population.ToString());
+            }
 
             // Gini
-            if (_pais.Gini != null)
+            if (_pais.Gini == "" || _pais.Gini == null)
             {
-                lb_informacoes.Items.Add("Gini: " + _pais.Gini);
+                lb_informacoes.Items.Add("Gini: Informação indisponivel");
             }
             else
             {
-                lb_informacoes.Items.Add("Gini: Informação indisponivel");
+                lb_informacoes.Items.Add("Gini: " + _pais.Gini);
             }
 
             string path = Assembly.GetExecutingAssembly().Location.Remove(Assembly.GetExecutingAssembly().Location.Length - 18);
@@ -173,13 +172,22 @@ namespace Projeto_Paises
             {
                 if (fuel.NomePais == _pais.Name)
                 {
-                    if (fuel.PrecoCombustivel == null)
+                    if (fuel.PrecoGasolina == null || fuel.PrecoGasolina == "")
                     {
-                        lb_informacoes.Items.Add("Preço do combustivel: Informação indisponivel");
+                        lb_informacoes.Items.Add("Preço da gasolina: Informação indisponivel");
                     }
                     else
                     {
-                        lb_informacoes.Items.Add("Preço do combustivel: " + fuel.PrecoCombustivel + " €/litro");
+                        lb_informacoes.Items.Add("Preço da gasolina: " + fuel.PrecoGasolina + " €/litro");
+                    }
+
+                    if (fuel.PrecoGasoleo == null || fuel.PrecoGasoleo == "")
+                    {
+                        lb_informacoes.Items.Add("Preço do gasoleo: Informação indisponivel");
+                    }
+                    else
+                    {
+                        lb_informacoes.Items.Add("Preço do gasoleo: " + fuel.PrecoGasoleo + " €/litro");
                     }
                 }
             }
@@ -203,14 +211,19 @@ namespace Projeto_Paises
 
             if (!connection.IsSuccess) // Se a conexão não tiver sido feita com sucesso
             {
-                LoadLocalPaises(); // Conecta-se à base de dados local
+                pbar_load.Value = 0;
+                await Task.Run(() => LoadLocalPaises()); // Conecta-se à base de dados local
+                await Task.Run(() => LoadLocalCombustiveis());
                 load = false;
+                pbar_load.Value = 500;
             }
             else // Se tiver conexão
             {
                 await LoadApiPaises(); // Conecta-se à Api que vai estabelecer ligação à base de dados online
                 await LoadApiFuelPrices();
-                DownloadBandeiras(_paises);
+
+                var progress = new Progress<int>(x => pbar_load.Value = x);
+                await Task.Run(()=>DownloadBandeiras(_paises,progress));
                 load = true;
             }
 
@@ -237,8 +250,11 @@ namespace Projeto_Paises
                 lbl_estado.Content = string.Format("Estado: \nDados carregados às {0:F}", DateTime.Now.ToLongTimeString());
                 lbl_origem.Content = string.Format("Origem: \nBase de dados local.");
             }
+        }
 
-            pbar_load.Value = 100; // Progressbar fica a 100%
+        private void LoadLocalCombustiveis()
+        {
+            _fuels = _fuelDataService.GetData();
         }
 
         /// <summary>
@@ -257,6 +273,8 @@ namespace Projeto_Paises
         {
             pbar_load.Value = 0;
 
+            var progress = new Progress<int>(x => pbar_load.Value = x);
+
             // Definir endereço base/principal e controlador da API
             Response response = await _apiService.GetPaises("http://restcountries.eu", "/rest/v2/all");
             // async e await serve para que a aplicação continue a correr enquanto são carregadas as taxas - Tarefa asincrona  
@@ -265,28 +283,36 @@ namespace Projeto_Paises
 
             _dataService.DeleteData();
 
-            _dataService.SaveData(_paises);
+            await Task.Run(() => _dataService.SaveData(_paises, progress));
         }
 
+        /// <summary>
+        /// Vai buscar as informações da API criada
+        /// </summary>
+        /// <returns></returns>
         private async Task LoadApiFuelPrices()
         {
+            var progress = new Progress<int>(x => pbar_load.Value = x);
+
             // Definir endereço base/principal e controlador da API
             Response response = await _fuelApiService.GetFuels("http://fuelprices.somee.com", "/api/FuelPrice");
-            // async e await serve para que a aplicação continue a correr enquanto são carregadas as taxas - Tarefa asincrona  
+            // async e await serve para que a aplicação continue a correr enquanto são carregadas as taxas - Tarefa asincrona
 
             _fuels = (List<Fuel>)response.Result;
 
             _fuelDataService.DeleteData();
 
-            _fuelDataService.SaveData(_fuels);
+            await Task.Run(() => _fuelDataService.SaveData(_fuels, progress));
         }
 
         /// <summary>
         /// Faz download da imagem da bandeira do pais escolhido caso tenha
         /// </summary>
         /// <param name="pais"></param>
-        private void DownloadBandeiras(List<Pais> paises)
+        private void DownloadBandeiras(List<Pais> paises, IProgress<int> progress)
         {
+            int counter = 500;
+
             foreach (Pais pais in paises)
             {
                 string svgFileName = pais.Flag;
@@ -327,6 +353,9 @@ namespace Projeto_Paises
                     {
 
                     }
+
+                    counter++;
+                    progress.Report(counter);
                 }
             }
         }

@@ -12,9 +12,9 @@ namespace WebAPI.Controllers
         DataClassesDataContext dc = new DataClassesDataContext();
 
         // GET: api/FuelPrice
-        public List<FuelPrice> Get()
+        public List<PrecoCombustivei> Get()
         {
-            var lista = from FuelPrice in dc.FuelPrices select FuelPrice;
+            var lista = from PrecoCombustivei in dc.PrecoCombustiveis select PrecoCombustivei;            
             return lista.ToList();
         }
 

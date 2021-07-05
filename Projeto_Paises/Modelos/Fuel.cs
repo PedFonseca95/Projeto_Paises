@@ -10,6 +10,8 @@ namespace Projeto_Paises.Modelos
     {
         public string NomePais { get; set; }
 
-        public string PrecoCombustivel { get; set; }
+        public string PrecoGasolina { get; set; }
+
+        public string PrecoGasoleo { get; set; }
     }
 }

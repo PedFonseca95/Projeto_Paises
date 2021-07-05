@@ -54,8 +54,10 @@ namespace Projeto_Paises.Servicos
             }
         }
 
-        public void SaveData(List<Pais> Paises)
+        public async Task SaveData(List<Pais> Paises, IProgress<int> progress)
         {
+            int counter = 0;
+
             try
             {
                 foreach (var pais in Paises)
@@ -65,9 +67,12 @@ namespace Projeto_Paises.Servicos
                         "values ('{0}', '{1}', '{2}', '{3}', {4}, '{5}', '{6}')", 
                         pais.Name.Replace("'","''"), pais.Capital.Replace("'", "''"), pais.Region.Replace("'", "''"), pais.Subregion.Replace("'", "''"), pais.Population, pais.Gini, pais.Flag);
 
+                    counter++;
                     _command = new SQLiteCommand(sql, _connection);
 
-                    _command.ExecuteNonQuery();
+                    progress.Report(counter);
+
+                    await _command.ExecuteNonQueryAsync();
                 }
 
                 _connection.Close();
@@ -129,6 +134,9 @@ namespace Projeto_Paises.Servicos
             {
                 _dialogService.ShowMessage("Erro", e.Message);
             }
+
+
+
         }
 
         internal void SaveData(List<Fuel> fuels)

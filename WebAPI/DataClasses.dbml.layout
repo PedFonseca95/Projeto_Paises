@@ -2,10 +2,10 @@
 <ordesignerObjectsDiagram dslVersion="1.0.0.0" absoluteBounds="0, 0, 11, 8.5" name="DataClasses">
   <DataContextMoniker Name="/DataClassesDataContext" />
   <nestedChildShapes>
-    <classShape Id="8ee4c98f-3529-4100-af5f-cfaa5f4e59c7" absoluteBounds="4.75, 2.875, 2, 1.1939925130208333">
-      <DataClassMoniker Name="/DataClassesDataContext/FuelPrice" />
+    <classShape Id="7b960dce-5e1d-48f0-bfed-e5cfa6ab08a6" absoluteBounds="5, 3.375, 2, 1.3862939453125">
+      <DataClassMoniker Name="/DataClassesDataContext/PrecoCombustivei" />
       <nestedChildShapes>
-        <elementListCompartment Id="cc6dc5f6-044d-4b0a-8050-533d9f11f1cc" absoluteBounds="4.765, 3.335, 1.9700000000000002, 0.63399251302083326" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+        <elementListCompartment Id="223bb5fd-3dfd-4fd1-8675-23d9526f5fe1" absoluteBounds="5.015, 3.835, 1.9700000000000002, 0.8262939453125" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
       </nestedChildShapes>
     </classShape>
   </nestedChildShapes>
