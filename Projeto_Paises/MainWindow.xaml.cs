@@ -215,7 +215,7 @@ namespace Projeto_Paises
                 await Task.Run(() => LoadLocalPaises()); // Conecta-se à base de dados local
                 await Task.Run(() => LoadLocalCombustiveis());
                 load = false;
-                pbar_load.Value = 500;
+                pbar_load.Value = 750;
             }
             else // Se tiver conexão
             {
