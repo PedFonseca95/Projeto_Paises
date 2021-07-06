@@ -54,8 +54,6 @@ namespace Projeto_Paises
             _fuelApiService = new FuelApiService();
             _fuelDataService = new FuelDataService();
             LoadPaises();
-
-
         }
 
         #endregion
@@ -76,7 +74,7 @@ namespace Projeto_Paises
                 "\nVersão: 1.0.0"
                 , "Sobre", MessageBoxButton.OK, MessageBoxImage.Information);
         }
-
+        
         /// <summary>
         /// Evento que carrega as informações do pais escolhido
         /// </summary>
